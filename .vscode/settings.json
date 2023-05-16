@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "raymath.h": "c",
+        "fastnoiselite.h": "c",
+        "stdio.h": "c"
+    }
+}
