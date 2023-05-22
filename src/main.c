@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <math.h>
+#include <time.h>
 #include <raylib.h>
 
 #include "entity.h"
@@ -17,18 +18,17 @@ int main(void)
     unsigned int screenWidth = 1280;
     unsigned int screenHeight = 720;
     uint8_t targetFPS = 0;
-    // bool vsync = 0;
-    bool showColliders = true;
+    bool showColliders = false;
 
     // game
-    int worldSeed = 9999;
+    int randomSeed = time(NULL);
     uint16_t horizontalWorldSize = 512;
     uint16_t verticalWorldSize = 512;
     //---------------------------------------------------------------------------------------
 
     // Setup window
     //---------------------------------------------------------------------------------------
-    //SetConfigFlags(FLAG_FULLSCREEN_MODE | FLAG_VSYNC_HINT);
+    //SetConfigFlags(FLAG_VSYNC_HINT);
     InitWindow(screenWidth, screenHeight, "IAM");
     SetTargetFPS(targetFPS);
     //--------------------------------------------------------------------------------------
@@ -36,8 +36,10 @@ int main(void)
     // Textures
     //---------------------------------------------------------------------------------------
     Image tileset = LoadImage(TextFormat("%s../assets/tileset.png", GetApplicationDirectory()));
+    Image playerSheet = LoadImage(TextFormat("%s../assets/sheets/body_sheet.png", GetApplicationDirectory()));
 
-    Texture2D dirt = LoadTextureFromImage(ImageFromImage(tileset, (Rectangle){8, 8, 8, 8}));
+    Texture2D dirtTexture = LoadTextureFromImage(ImageFromImage(tileset, (Rectangle){8, 8, 8, 8}));
+    Texture2D playerTexture = LoadTextureFromImage(ImageFromImage(playerSheet, (Rectangle){2, 1, 7, 14}));
     //---------------------------------------------------------------------------------------
 
     // Entity Types
@@ -47,14 +49,14 @@ int main(void)
         "Player",
         0.0f,
         0.0f,
-        (Texture2D){0},
-        (Vector2){8, 16}};
+        playerTexture,
+        (Vector2){7, 14}};
     //---------------------------------------------------------------------------------------
 
     // Tile Types
     //---------------------------------------------------------------------------------------
     CreateTileType("Blank", (Texture2D){0}, 0, 0, 0, 0);
-    CreateTileType("Ground", (Texture2D){0}, Solid, UINT16_MAX, 0.3f, 10.0f);
+    CreateTileType("Ground", dirtTexture, Solid, UINT16_MAX, 0.3f, 10.0f);
 
     //---------------------------------------------------------------------------------------
 
@@ -69,11 +71,14 @@ int main(void)
     player.position.x = 256 * TILE_SIZE;
     camera.target = player.position;
     camera.offset = (Vector2){screenWidth / 2.0f, screenHeight / 2.0f};
-    camera.zoom = 3.0f;
+    camera.zoom = 4.0f;
     Rectangle camBounds = GetCameraBounds(camera, screenWidth, screenHeight, 0);
 
-    // worldd
-    GenerateWorld(worldSeed, horizontalWorldSize, verticalWorldSize);
+    // world
+    SetRandomSeed(randomSeed);
+    GenerateWorld(horizontalWorldSize, verticalWorldSize);
+    SetTile(256, 4, 1);
+    RefreshEdgeBuffer();
     //--------------------------------------------------------------------------------------
 
     // Main game loop
@@ -112,8 +117,9 @@ int main(void)
 
         // camera
         camera.target = (Vector2){
-            player.position.x + player.type.size.x / 2.0f,
-            player.position.y + player.type.size.y / 2.0f};
+            (int)player.position.x + player.type.size.x / 2.0f,
+            (int)player.position.y + player.type.size.y / 2.0f};
+        
         camBounds = GetCameraBounds(camera, screenWidth, screenHeight, 0);
         //----------------------------------------------------------------------------------
 

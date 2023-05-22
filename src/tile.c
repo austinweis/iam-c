@@ -77,13 +77,13 @@ void DrawTiles(bool colliders, Rectangle cameraBounds)
     }
 }
 
-void GenerateWorld(int seed, uint16_t x_size, uint16_t y_size)
+void GenerateWorld(uint16_t x_size, uint16_t y_size)
 {
     // generation settings
     worldSizeX = x_size;
     worldSizeY = y_size;
-    fnl_state noiseState = fnlCreateState(seed);
-    noiseState.seed = seed;
+    fnl_state noiseState = fnlCreateState();
+    noiseState.seed = GetRandomValue(0, RAND_MAX);
     noiseState.frequency = 0.001f;
     noiseState.gain = 0.1f;
     noiseState.octaves = 4;

@@ -51,7 +51,7 @@ extern uint16_t worldSizeY;
 void CreateTileType(const char *name, Texture2D sprite, PhysicalState state, uint16_t density, float bounce, float friction);
 void SetTile(uint16_t x, uint16_t y, uint16_t typeId);
 void DrawTiles(bool colliders, Rectangle cameraBounds);
-void GenerateWorld(int seed, uint16_t x_size, uint16_t y_size);
+void GenerateWorld(uint16_t x_size, uint16_t y_size);
 void RefreshEdgeBuffer();
 
 #endif
